@@ -1,14 +1,14 @@
 
 <template>
-    <div>
+    <div style="position: relative;" ref="application">
         <div
+            :draggable="true"
             v-if="!prop.application.isBox"
             class="application"
-            draggable
-            @mouseenter="tapFocus(prop.id)"
+            @mousedown="tapFocus(prop.id)"
             :class="{ 'application-focus': prop.id === foucus?.applicationFocusId.value }"
         >
-            <span class="iconfont icon-Nginx"></span>
+            <img :draggable="false" src="@/assets/homeScreenIcon/Nginx.png" />
             <div class="application-text">nginx{{ prop.id }}</div>
         </div>
     </div>
@@ -16,15 +16,17 @@
 
 <script lang="ts" setup>
 import { ApplicationProp } from '@/assets/config';
-import { inject } from 'vue'
+import { inject, ref } from 'vue'
 import type { focusApplication } from "./Main.vue"
 const foucus = inject<focusApplication>("focus")
+const application = ref<HTMLDivElement>()
 interface Prop {
     application: ApplicationProp;
     id: number | string
 }
 const prop = defineProps<Prop>()
 function tapFocus(id: number | string) {
+    application.value?.focus()
     foucus?.setFocusId(id)
 }
 </script>
@@ -45,10 +47,14 @@ function tapFocus(id: number | string) {
     .application-text {
         cursor: default;
         user-select: none;
+        pointer-events: none;
     }
-    span {
-        font-size: 36px;
-        color: #1ac807;
+    img {
+        flex: 1;
+        object-fit: cover;
+        max-height: 60%;
+        user-select: none;
+        pointer-events: none;
     }
 }
 .application-focus {
