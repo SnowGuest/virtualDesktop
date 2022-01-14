@@ -1,0 +1,37 @@
+{
+  "id": "3142201",
+  "name": "virtualDesktop",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "24623786",
+      "name": "Nginx",
+      "font_class": "Nginx",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "1299762",
+      "name": "Minimize-1",
+      "font_class": "2zuixiaohua-1",
+      "unicode": "e65a",
+      "unicode_decimal": 58970
+    },
+    {
+      "icon_id": "3368838",
+      "name": "最大化",
+      "font_class": "zuidahua",
+      "unicode": "e66b",
+      "unicode_decimal": 58987
+    },
+    {
+      "icon_id": "1727491",
+      "name": "246注销、关机",
+      "font_class": "zhuxiaoguanji",
+      "unicode": "e8d8",
+      "unicode_decimal": 59608
+    }
+  ]
+}
