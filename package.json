@@ -1,7 +1,7 @@
 {
   "name": "virtualdesktop",
   "version": "0.0.0",
-  "license": "GPL-v2",
+  "license": "MIT",
   "main": "dist/main/index.cjs",
   "scripts": {
     "dev": "node scripts/watch.mjs",
