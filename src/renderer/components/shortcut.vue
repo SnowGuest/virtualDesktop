@@ -4,6 +4,7 @@
         <div
             v-if="!prop.application.isBox"
             class="application"
+            draggable
             @mouseenter="tapFocus(prop.id)"
             :class="{ 'application-focus': prop.id === foucus?.applicationFocusId.value }"
         >
