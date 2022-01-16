@@ -1,12 +1,19 @@
 
 <template>
-    <div style="position: relative;" ref="application">
+    <div
+        class="applicationBox"
+        ref="application"
+        :class="{ 'applicationBox_inline': !prop.application.isBox }"
+        @dragenter.prevent
+        @dragover.prevent
+        @drop="putDesktopShort"
+    >
         <div
             :draggable="true"
             v-if="!prop.application.isBox"
             class="application"
             @mousedown="tapFocus(prop.id)"
-            :class="{ 'application-focus': prop.id === foucus?.applicationFocusId.value }"
+            @dragstart="startDragPut"
         >
             <img :draggable="false" src="@/assets/homeScreenIcon/Nginx.png" />
             <div class="application-text">nginx{{ prop.id }}</div>
@@ -29,8 +36,31 @@ function tapFocus(id: number | string) {
     application.value?.focus()
     foucus?.setFocusId(id)
 }
+function putDesktopShort(e: DragEvent) {
+    if (typeof e.dataTransfer?.getData("text/application") === "string") {
+        const touchApplication: Prop = JSON.parse(e.dataTransfer?.getData("text/application"))
+        foucus?.exchangesApplication(prop.application, touchApplication.application)
+    }
+}
+function startDragPut(e: DragEvent) {
+    e.dataTransfer?.setData("text/application", JSON.stringify(prop))
+}
 </script>
 <style lang="scss" scoped>
+.applicationBox {
+    position: relative;
+    width: 75px;
+    height: 70px;
+    min-width: 75px;
+    min-height: 70px;
+    max-width: 75px;
+    max-height: 70px;
+}
+.applicationBox_inline {
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.16);
+    }
+}
 .application {
     display: flex;
     flex-direction: column;
@@ -41,9 +71,8 @@ function tapFocus(id: number | string) {
     height: 100%;
     border-radius: 4px;
     transition: all 0.3s;
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.16);
-    }
+    background: transparent;
+
     .application-text {
         cursor: default;
         user-select: none;
@@ -52,12 +81,9 @@ function tapFocus(id: number | string) {
     img {
         flex: 1;
         object-fit: cover;
-        max-height: 60%;
+        max-height: 42px;
         user-select: none;
         pointer-events: none;
     }
-}
-.application-focus {
-    border: 1px dashed #ffffff;
 }
 </style>

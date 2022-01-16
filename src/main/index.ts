@@ -1,6 +1,8 @@
 import os from "os";
 import path from "path";
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
+import * as onceCommand from "./oncecommand"
+import * as backCommand from "./backcommand"
 
 const isWin7 = os.release().startsWith("6.1");
 if (isWin7) app.disableHardwareAcceleration(); // 如果当前是win7 则禁用硬件加速功能
@@ -9,7 +11,6 @@ if (!app.requestSingleInstanceLock()) { // 让当前的程序成为一个单一�
   app.quit();
   process.exit(0);
 }
-
 let win: BrowserWindow | null = null; // 构建主要实例
 
 async function createWindow() {
@@ -18,8 +19,14 @@ async function createWindow() {
     height: 768,
     frame: false,
     resizable: false, // 禁止拖拽
+    webPreferences: {
+      // preload: path.join(__dirname, '../preload/index.cjs'),
+      nodeIntegration: true,
+      contextIsolation: false
+    }
   });
-
+  registeredRenderOnce(win, onceCommand)
+  registeredRenderBack(win, backCommand)
   if (app.isPackaged) { // 当前是否已经打包了
     win.loadFile(path.join(__dirname, "../index.html")); // 如果打包了则加载上一层的index.html
   } else {
@@ -28,6 +35,28 @@ async function createWindow() {
     const url = `http://${pkg.env.HOST || "127.0.0.1"}:${pkg.env.PORT}`;
     win.loadURL(url);
     win.webContents.openDevTools();
+  }
+
+
+}
+interface once {
+  [key: string]: (event: Electron.IpcMainEvent, win: BrowserWindow, ...arg: any) => any
+}
+interface Back {
+  [key: string]: (event: Electron.IpcMainInvokeEvent, win: BrowserWindow, ...arg: any) => any
+}
+function registeredRenderOnce<T extends once>(win: BrowserWindow, foo: T) {
+  for (let key in foo) {
+    ipcMain.on(key, (event: Electron.IpcMainEvent, ...arg: any) => {
+      foo[key](event, win, ...arg)
+    })
+  }
+}
+function registeredRenderBack<T extends Back>(win: BrowserWindow, foo: T) {
+  for (let key in foo) {
+    ipcMain.handle(key, (event: Electron.IpcMainInvokeEvent, ...arg: any) => {
+      return foo[key](event, win, ...arg)
+    })
   }
 }
 
@@ -55,6 +84,8 @@ app.on("activate", () => {
     createWindow();
   }
 });
+
+
 
 // @TODO
 // auto update

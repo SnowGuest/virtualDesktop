@@ -55,8 +55,23 @@ async function watchMain() {
 
   return watcher
 }
-
+/**
+ * @param {import('vite').ViteDevServer} viteDevServer
+ * @returns {Promise<import('rollup').RollupWatcher>}
+ */
+async function watchPreload(viteDevServer) {
+  return getWatcher({
+    name: 'electron-preload-watcher',
+    configFile: 'configs/vite-preload.config.ts',
+    writeBundle() {
+      viteDevServer.ws.send({
+        type: 'full-reload',
+      })
+    },
+  })
+}
 const viteDevServer = await createServer({ configFile: 'configs/vite-renderer.config.ts' })
 
 await viteDevServer.listen()
+// await watchPreload(viteDevServer)
 await watchMain()
