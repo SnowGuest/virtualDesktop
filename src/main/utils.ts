@@ -101,7 +101,6 @@ export class CreateSSH {
                 sftp.readdir(path, (err, list) => {
                     if (err) { reject(err); return }
                     this.conn.end();
-
                     resolve(list.map(e => {
                         const obj: folder = {
                             folderName: e.filename,

@@ -1,8 +1,14 @@
 
 <template>
     <header class="menuBar between">
-        <nav class="menuBar_left">
+        <nav class="menuBar_left flex">
             <img class="logoImg" src="@/assets/logo.png" />
+            <div class="center">
+                <span>设备</span>
+            </div>
+            <div class="center">
+                <span>设置</span>
+            </div>
         </nav>
         <nav class="align-end menuBar_right">
             <div class="center" @click="minMize">
@@ -74,8 +80,14 @@ function timingColor() {
 
     .menuBar_left {
         height: 100%;
+        .center {
+            width: auto !important;
+            font-size: 14px;
+            padding: 0 6px;
+        }
     }
-    .menuBar_right {
+    .menuBar_right,
+    .menuBar_left {
         height: 100%;
         .center {
             width: 30px;
@@ -102,10 +114,13 @@ function timingColor() {
                 }
             }
         }
+
+        color: v-bind(fontColor);
+    }
+    .menuBar_right {
         .center:last-child {
             width: 34px;
         }
-        color: v-bind(fontColor);
     }
 }
 </style>

@@ -4,9 +4,9 @@
         class="applicationBox"
         ref="application"
         :class="{ 'applicationBox_inline': !prop.application.isBox }"
-        @dragenter.prevent
-        @dragover.prevent
-        @drop="putDesktopShort"
+        @dragenter.prevent.stop
+        @dragover.prevent.stop
+        @drop.prevent.stop="putDesktopShort"
     >
         <div
             :draggable="true"
@@ -27,7 +27,7 @@ import { inject, ref } from 'vue'
 import type { focusApplication } from "./Main.vue"
 const foucus = inject<focusApplication>("focus")
 const application = ref<HTMLDivElement>()
-interface Prop {
+export interface Prop {
     application: ApplicationProp;
     id: number | string
 }
@@ -37,6 +37,8 @@ function tapFocus(id: number | string) {
     foucus?.setFocusId(id)
 }
 function putDesktopShort(e: DragEvent) {
+    console.log("自己的id", prop.application)
+    console.log("上一家的id", e.dataTransfer?.getData("text/application"))
     if (typeof e.dataTransfer?.getData("text/application") === "string") {
         const touchApplication: Prop = JSON.parse(e.dataTransfer?.getData("text/application"))
         foucus?.exchangesApplication(prop.application, touchApplication.application)
@@ -49,12 +51,12 @@ function startDragPut(e: DragEvent) {
 <style lang="scss" scoped>
 .applicationBox {
     position: relative;
-    width: 75px;
-    height: 70px;
-    min-width: 75px;
+    width: 100%;
+    height: 100%;
+    min-width: 64px;
     min-height: 70px;
-    max-width: 75px;
-    max-height: 70px;
+    max-width: 100%;
+    max-height: 100%;
 }
 .applicationBox_inline {
     &:hover {
