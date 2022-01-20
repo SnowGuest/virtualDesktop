@@ -3,7 +3,8 @@ export type IpcMainName =
     "close" |
     "maxMize" |
     "minMize" |
-    "connectionSSH"
+    "connectionSSH" |
+    "showMenu"
 
 type CommandType = "send" | "invoke"
 interface arg {
@@ -24,7 +25,6 @@ export async function onceCommand(name: IpcMainName, type: CommandType = "send",
 }
 
 export async function listenerCommand(name: string, callback: (event: Electron.IpcRendererEvent, ...arg: any[]) => void) {
-    // const result = arg ? await ipcRenderer[type](name, JSON.stringify({ arg })) : await ipcRenderer[type](name)
     const result = ipcRenderer.on(name, callback)
     if (result) {
         return Promise.resolve(result)

@@ -7,7 +7,6 @@ const TAG = chalk.bgBlue(' build.mjs ')
 
 const viteConfigs = {
   main: 'configs/vite-main.config.ts',
-  preload: 'configs/vite-preload.config.ts',
   reactTs: 'configs/vite-renderer.config.ts',
 }
 

@@ -12,11 +12,11 @@
             :draggable="true"
             v-if="!prop.application.isBox"
             class="application"
-            @mousedown="tapFocus(prop.id)"
+            @mousedown="tapFocus(prop.sort)"
             @dragstart="startDragPut"
         >
             <img :draggable="false" src="@/assets/homeScreenIcon/Nginx.png" />
-            <div class="application-text">nginx{{ prop.id }}</div>
+            <div class="application-text">nginx{{ prop.sort }}</div>
         </div>
     </div>
 </template>
@@ -29,15 +29,15 @@ const foucus = inject<focusApplication>("focus")
 const application = ref<HTMLDivElement>()
 export interface Prop {
     application: ApplicationProp;
-    id: number | string
+    sort: number | string
 }
 const prop = defineProps<Prop>()
-function tapFocus(id: number | string) {
+function tapFocus(sort: number | string) {
     application.value?.focus()
-    foucus?.setFocusId(id)
+    foucus?.setFocusSort(sort)
 }
 function putDesktopShort(e: DragEvent) {
-    console.log("自己的id", prop.application)
+    // console.log("自己的id", prop.application)
     console.log("上一家的id", e.dataTransfer?.getData("text/application"))
     if (typeof e.dataTransfer?.getData("text/application") === "string") {
         const touchApplication: Prop = JSON.parse(e.dataTransfer?.getData("text/application"))

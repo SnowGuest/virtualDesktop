@@ -2,29 +2,33 @@
 <template>
     <main
         class="desktop"
+        ref="desktop"
         :class="{ desktopShow: loaderDesktop }"
         @dragenter.prevent
         @dragover.prevent
         @drop="putDesktopShort"
+        @click.right="showMenu"
     >
         <shortcutVue
             v-for="(item,index) in applicationList"
             :key="index"
             :application="item"
-            :id="index"
+            :sort="index"
         />
     </main>
 </template>
 
 <script lang="ts" setup>
-// setFileTree
+import menu from "@/menu/main.json"
 import { ApplicationProp, loadDesktop } from '@/assets/config';
 import { useRouter } from 'vue-router';
-import { listenerCommand } from '@/utils/ipRender';
+import { listenerCommand, onceCommand } from '@/utils/ipRender';
 import { reactive, provide, ref, Ref } from 'vue';
 import shortcutVue, { Prop as shortcProp } from './shortcut.vue';
+const desktop = ref<HTMLElement>()
+
 let shortcutWidth = 75 + ((window.innerWidth - 2) % 75 / parseInt((window.innerWidth - 2) / 75 + ""))
-let shortcutHeight = 70 + ((window.innerHeight - 34) % 70 / parseInt((window.innerHeight - 34) / 70 + ""))
+let shortcutHeight = 75 + ((window.innerHeight - 34) % 75 / parseInt((window.innerHeight - 34) / 75 + ""))
 let width = parseInt((window.innerWidth) / shortcutWidth + "")
 let height = parseInt((window.innerHeight - 32) / shortcutHeight + "")
 const loaderDesktop = ref<boolean>(false); // 是否加载桌面的控制值
@@ -34,16 +38,27 @@ const router = useRouter()
 function putDesktopShort(e: DragEvent) {
     const data: shortcProp = JSON.parse(e.dataTransfer?.getData("text/application") as string)
     const { pageX, pageY } = e
-    const X = parseInt(pageX / 75 + "")
-    const Y = parseInt(pageY / 70 + "")
-    let index = (Y - 1) * width + (X - 1)
-    if (index > 350) {
-        index = (Y - 2) * width + (X - 1)
+    const X = parseInt(pageX / shortcutWidth + "") // 当前用户鼠标最近的X单元格
+    const Y = parseInt((pageY - 32) / shortcutHeight + ""); // 当前用户鼠标最近的Y单元格
+    let index = (Y - 1) * width + (X - 1); // 计算出来相对于最近的点
+    // const mainHight = shortcutHeight * height + 32 + 2; //当前Main高度 + header + Main的padding
+    // const mainWidth = shortcutWidth * width + 2; //当前Main宽度
+    if (pageX - 2 <= 0) { // 处理左侧贴边的情况
+        index = width * Y
+        console.log("左侧贴边")
+    } else if (pageY >= window.innerHeight - 2) { // 处理底部贴边 保留4px容差值
+        index = width * (Y - 1) + X
+        console.log("底部贴边")
+    } else if (pageX >= window.innerWidth - 2) { // 处理右侧贴边 保留4px容差值
+        index = width * ((Y - 1) > 0 ? (Y - 1) : Y) + X
+        console.log("右侧贴边")
     }
-    console.log(X, Y, width, height)
+
+    console.log(pageX, pageY, X, Y, width, height)
     const application = applicationList.find(e => e.id === index)
-    console.log(index, applicationList, application)
-    if (application) {
+    console.log(index, applicationFocusId.value)
+    console.log(data)
+    if (application && index !== applicationFocusId.value) {
         exchangesApplication(application, data.application)
     }
     // console.log(index, data)
@@ -97,34 +112,47 @@ listenerCommand("setDesktopIcon", (event: Electron.IpcRendererEvent, tree: any) 
 
 export interface focusApplication {
     applicationFocusId: Ref<number | string>;
-    setFocusId: (id: number | string) => void;
+    setFocusSort: (sort: number | string) => void;
     exchangesApplication: (to: ApplicationProp, from: ApplicationProp) => void;
 }
 function exchangesApplication(to: ApplicationProp, from: ApplicationProp) {
+    console.log(to, from)
     const fromDate = applicationList.find(e => e.id === from.id)
     const toDate = applicationList.find(e => e.id === to.id)
+    console.log(toDate, fromDate, "去到,原本",)
+
     if (toDate && fromDate) {
         const toTemporary: ApplicationProp = JSON.parse(JSON.stringify(toDate))
         const fromTemporary: ApplicationProp = JSON.parse(JSON.stringify(fromDate))
-        Object.assign(fromDate, toTemporary)
+        if (to.isBox) {
+            const newData: ApplicationProp = {
+                isBox: true,
+                id: toTemporary.id
+            }
+            Object.assign(fromDate, newData)
+        }
         Object.assign(toDate, fromTemporary)
     }
+    console.log(applicationList.map(e => e.id))
 }
 provide<focusApplication>("focus", {
     applicationFocusId,
-    setFocusId(id: number | string) {
-        applicationFocusId.value = id
+    setFocusSort(sort: number | string) {
+        applicationFocusId.value = sort
     },
     exchangesApplication
-
 })
 export interface API {
     loadDesktop: loadDesktop
 }
+applicationList[0].isBox = false
+applicationList[1].isBox = false
+applicationList[25].isBox = false
+applicationList[26].isBox = false
+loaderDesktop.value = true
 defineExpose<API>({
     loadDesktop() {
-        applicationList[0].isBox = false
-        loaderDesktop.value = true
+        // desktop.value?.addEventListener("")
         setTimeout(() => {
             router.replace({
                 name: "air"
@@ -132,6 +160,11 @@ defineExpose<API>({
         }, 400);
     }
 })
+function showMenu(e: MouseEvent) {
+    console.log(e)
+    console.log(menu)
+    onceCommand("showMenu", "send", { menu, x: e.pageX, y: e.pageY })
+}
 
 </script>
 <style lang="scss" scoped>
@@ -147,7 +180,7 @@ defineExpose<API>({
         auto-fill,
         minmax(75px, 1fr)
     ); // 自适应布局暂时有无法精准计算的问题
-    grid-template-rows: repeat(auto-fill, 70px);
+    grid-template-rows: repeat(auto-fill, 75px);
     color: #ffffff;
     text-shadow: 1px 1px 3px #000000;
     justify-content: space-between;
