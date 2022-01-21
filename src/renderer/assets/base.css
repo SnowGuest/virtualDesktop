@@ -80,3 +80,6 @@ body {
 .flex{
   display: flex;
 }
+.grow-1{
+  flex: 1;
+}

@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import HeaderVue from './components/Header.vue';
-import MainVue, { API as MainAPI } from './components/Main.vue';
-import { provide, ref } from "vue"
-import { ProvideInterface, MenuBarColorStatus } from "@/assets/config"
+import HeaderVue from "./components/Header.vue";
+import MainVue, { API as MainAPI } from "./components/Main.vue";
+import { provide, ref } from "vue";
+import { ProvideInterface, MenuBarColorStatus } from "@/assets/config";
 
-const Main = ref<MainAPI>()
+const Main = ref<MainAPI>();
 function loadDesktop() {
-  Main.value?.loadDesktop()
+  Main.value?.loadDesktop();
 }
 provide<ProvideInterface>("base", {
   menuBarColor: MenuBarColorStatus.black,
-  loadDesktop
-})
+  loadDesktop,
+});
 </script>
 
 <template>

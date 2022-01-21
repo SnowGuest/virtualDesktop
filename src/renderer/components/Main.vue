@@ -15,10 +15,12 @@
             :application="item"
             :sort="index"
         />
+        <docket />
     </main>
 </template>
 
 <script lang="ts" setup>
+import docket from "./docket.vue";
 import menu from "@/menu/main.json"
 import { ApplicationProp, loadDesktop } from '@/assets/config';
 import { useRouter } from 'vue-router';
@@ -161,8 +163,8 @@ defineExpose<API>({
     }
 })
 function showMenu(e: MouseEvent) {
-    console.log(e)
-    console.log(menu)
+    // console.log(e)
+    // console.log(menu)
     onceCommand("showMenu", "send", { menu, x: e.pageX, y: e.pageY })
 }
 
@@ -189,7 +191,7 @@ function showMenu(e: MouseEvent) {
 }
 .desktopShow {
     background-color: transparent;
-    background: url("@/assets/desktopBackground/defalut.jpg") no-repeat;
+    background: url("@/assets/desktopBackground/defalut.png") no-repeat;
     background-size: cover;
 }
 </style>

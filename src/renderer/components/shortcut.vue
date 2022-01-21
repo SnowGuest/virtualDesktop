@@ -24,8 +24,9 @@
 <script lang="ts" setup>
 import { ApplicationProp } from '@/assets/config';
 import { inject, ref } from 'vue'
-import type { focusApplication } from "./Main.vue"
-const foucus = inject<focusApplication>("focus")
+import type { focusApplication } from "./Main.vue";
+import imgsrc from "@/assets/homeScreenIcon/Nginx.png"
+const foucus = inject<focusApplication>("focus");
 const application = ref<HTMLDivElement>()
 export interface Prop {
     application: ApplicationProp;
@@ -45,8 +46,18 @@ function putDesktopShort(e: DragEvent) {
     }
 }
 function startDragPut(e: DragEvent) {
+    // const canvas = document.createElement("canvas");
+    // canvas.width = canvas.height = 50;
+    // const ctx = canvas.getContext("2d");
+    // const img = new Image()
+    // img.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' %3E%3Cpath /%3E%3C/svg%3E"
+    // if (ctx) {
+    //     ctx.drawImage(img, 0, 0);
+    // }
+    // e.dataTransfer?.setDragImage(canvas, 0, 0);
     e.dataTransfer?.setData("text/application", JSON.stringify(prop))
 }
+
 </script>
 <style lang="scss" scoped>
 .applicationBox {
