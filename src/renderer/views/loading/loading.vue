@@ -25,11 +25,12 @@
 
 <script lang="ts" setup>
 import { ref } from "vue"
-const opacity = ref<number>(1)
-const display = ref<string>("block")
+
 export interface API {
     updateStatus: (flag: boolean) => Promise<boolean>
 }
+const opacity = ref<number>(1)
+const display = ref<string>("block")
 function updateStatus(flag: boolean): Promise<boolean> {
     return new Promise((resolve, reject) => {
         opacity.value = Number(flag)
